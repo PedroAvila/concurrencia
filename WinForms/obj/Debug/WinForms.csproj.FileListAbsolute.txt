@@ -1,0 +1,13 @@
+C:\Csharp\Concurrencia\WinForms\bin\Debug\WinForms.exe.config
+C:\Csharp\Concurrencia\WinForms\bin\Debug\WinForms.exe
+C:\Csharp\Concurrencia\WinForms\bin\Debug\WinForms.pdb
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.AssemblyReference.cache
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.Form1.resources
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.Properties.Resources.resources
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.GenerateResource.cache
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.CoreCompileInputs.cache
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.exe
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.pdb
+C:\Csharp\Concurrencia\WinForms\bin\Debug\Newtonsoft.Json.dll
+C:\Csharp\Concurrencia\WinForms\bin\Debug\Newtonsoft.Json.xml
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.CopyComplete
