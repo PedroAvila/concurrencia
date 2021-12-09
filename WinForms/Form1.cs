@@ -29,10 +29,12 @@ namespace WinForms
         {
             //Thread.Sleep(5000);
             loadingGif.Visible = true;
+            pgProcesamiento.Visible = true;
+            var reportarProgreso = new Progress<int>(ReportarProgresoTarjetas);
             //await Esperar();
             //var nombre = txtInput.Text;
 
-            var tarjetas = await ObtenerTarjetasDeCredito(2500);
+            var tarjetas = await ObtenerTarjetasDeCredito(20);
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -40,7 +42,7 @@ namespace WinForms
             {
                 //var saludo = await ObtenerSaludo(nombre);
                 //MessageBox.Show(saludo);
-                await ProcesarTarjetas(tarjetas);
+                await ProcesarTarjetas(tarjetas, reportarProgreso);
             }
             catch (HttpRequestException ex)
             {
@@ -49,13 +51,20 @@ namespace WinForms
             MessageBox.Show($"Operación finalizada en {stopWatch.ElapsedMilliseconds / 1000.0} segundos");
 
             loadingGif.Visible = false;
+            pgProcesamiento.Visible = false;
         }
 
-        private async Task ProcesarTarjetas(List<string> tarjetas)
+        private void ReportarProgresoTarjetas(int porcentaje)
         {
-            using var semaforo = new SemaphoreSlim(1000);
+            pgProcesamiento.Value = porcentaje;
+        }
+
+        private async Task ProcesarTarjetas(List<string> tarjetas, IProgress<int> progress = null)
+        {
+            using var semaforo = new SemaphoreSlim(2);
 
             var tareas = new List<Task<HttpResponseMessage>>();
+            var indice = 0;
 
             tareas = tarjetas.Select(async tarjeta =>
             {
@@ -64,7 +73,18 @@ namespace WinForms
                 await semaforo.WaitAsync();
                 try
                 {
-                    return await httpClient.PostAsync($"{apiURL}/tarjetas", content);
+                    var tareaInterna = await httpClient.PostAsync($"{apiURL}/tarjetas", content);
+
+                    //if (progress != null)
+                    //{
+                    //    indice++;
+                    //    var porcentaje = (double)indice / tarjetas.Count;
+                    //    porcentaje = porcentaje * 100;
+                    //    var porcentajeInt = (int)Math.Round(porcentaje, 0);
+                    //    progress.Report(porcentajeInt);
+                    //}
+
+                    return tareaInterna;
                 }
                 finally
                 {
@@ -72,8 +92,25 @@ namespace WinForms
                 }
             }).ToList();
 
+            
 
-            var respuestas = await Task.WhenAll(tareas);
+
+            var respuestasTareas =  Task.WhenAll(tareas);
+
+            if (progress != null)
+            {
+                while (await Task.WhenAny(respuestasTareas, Task.Delay(1000)) != respuestasTareas)
+                {
+                    var tareasCompletadas = tareas.Where(x => x.IsCompleted).Count();
+                    var porcentaje = (double)tareasCompletadas / tarjetas.Count;
+                    porcentaje = porcentaje * 100;
+                    var porcentajeInt = (int)Math.Round(porcentaje, 0);
+                    progress.Report(porcentajeInt);
+                }
+            }
+
+            var respuestas = await respuestasTareas;
+
             var tarjetasRechazadas = new List<string>();
 
             foreach (var respuesta in respuestas)
