@@ -18,6 +18,8 @@ namespace WinForms
     {
         private string apiURL;
         private HttpClient httpClient;
+        private CancellationTokenSource _cancellationTokenSource;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,6 +29,9 @@ namespace WinForms
 
         private async void btnIniciar_Click(object sender, EventArgs e)
         {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
+
             //Thread.Sleep(5000);
             loadingGif.Visible = true;
             pgProcesamiento.Visible = true;
@@ -34,7 +39,7 @@ namespace WinForms
             //await Esperar();
             //var nombre = txtInput.Text;
 
-            var tarjetas = await ObtenerTarjetasDeCredito(20);
+            
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -42,16 +47,23 @@ namespace WinForms
             {
                 //var saludo = await ObtenerSaludo(nombre);
                 //MessageBox.Show(saludo);
-                await ProcesarTarjetas(tarjetas, reportarProgreso);
+                var tarjetas = await ObtenerTarjetasDeCredito(20, _cancellationTokenSource.Token);
+                await ProcesarTarjetas(tarjetas, reportarProgreso, _cancellationTokenSource.Token);
             }
             catch (HttpRequestException ex)
             {
                 MessageBox.Show(ex.Message);
             }
+            catch(TaskCanceledException ex)
+            {
+                MessageBox.Show($"La operación ha sido cancelada {ex.Message}");
+            }
+
             MessageBox.Show($"Operación finalizada en {stopWatch.ElapsedMilliseconds / 1000.0} segundos");
 
             loadingGif.Visible = false;
             pgProcesamiento.Visible = false;
+            pgProcesamiento.Value = 0;
         }
 
         private void ReportarProgresoTarjetas(int porcentaje)
@@ -59,12 +71,13 @@ namespace WinForms
             pgProcesamiento.Value = porcentaje;
         }
 
-        private async Task ProcesarTarjetas(List<string> tarjetas, IProgress<int> progress = null)
+        private async Task ProcesarTarjetas(List<string> tarjetas, IProgress<int> progress = null, CancellationToken cancellationToken = default)
         {
+            Console.WriteLine("procesando");
             using var semaforo = new SemaphoreSlim(2);
 
             var tareas = new List<Task<HttpResponseMessage>>();
-            var indice = 0;
+            //var indice = 0;
 
             tareas = tarjetas.Select(async tarjeta =>
             {
@@ -73,7 +86,7 @@ namespace WinForms
                 await semaforo.WaitAsync();
                 try
                 {
-                    var tareaInterna = await httpClient.PostAsync($"{apiURL}/tarjetas", content);
+                    var tareaInterna = await httpClient.PostAsync($"{apiURL}/tarjetas", content, cancellationToken);
 
                     //if (progress != null)
                     //{
@@ -129,7 +142,7 @@ namespace WinForms
             }
         }
 
-        private async Task<List<string>> ObtenerTarjetasDeCredito(int cantidadDeTarjetas)
+        private async Task<List<string>> ObtenerTarjetasDeCredito(int cantidadDeTarjetas, CancellationToken cancellationToken = default)
         {
 
             return await Task.Run(() =>
@@ -138,9 +151,17 @@ namespace WinForms
 
                 for (int i = 0; i < cantidadDeTarjetas; i++)
                 {
+                    //await Task.Delay(1000);
                     //0000000000000001
                     //0000000000000002
                     tarjetas.Add(i.ToString().PadLeft(16, '0'));
+
+                    Console.WriteLine($"Han sido generadas {tarjetas.Count} tarjetas");
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        throw new TaskCanceledException();
+                    }
                 }
 
                 return tarjetas;
@@ -163,5 +184,9 @@ namespace WinForms
             }
         }
 
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            _cancellationTokenSource?.Cancel();
+        }
     }
 }

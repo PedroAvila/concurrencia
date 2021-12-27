@@ -35,6 +35,7 @@ namespace WinForms
             this.label1 = new System.Windows.Forms.Label();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.pgProcesamiento = new System.Windows.Forms.ProgressBar();
+            this.btnCancelar = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.loadingGif)).BeginInit();
             this.SuspendLayout();
             // 
@@ -86,11 +87,22 @@ namespace WinForms
             this.pgProcesamiento.TabIndex = 4;
             this.pgProcesamiento.Visible = false;
             // 
+            // btnCancelar
+            // 
+            this.btnCancelar.Location = new System.Drawing.Point(260, 131);
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Size = new System.Drawing.Size(148, 43);
+            this.btnCancelar.TabIndex = 5;
+            this.btnCancelar.Text = "Cancelar";
+            this.btnCancelar.UseVisualStyleBackColor = true;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(711, 450);
+            this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.pgProcesamiento);
             this.Controls.Add(this.txtInput);
             this.Controls.Add(this.label1);
@@ -112,6 +124,7 @@ namespace WinForms
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtInput;
         private System.Windows.Forms.ProgressBar pgProcesamiento;
+        private System.Windows.Forms.Button btnCancelar;
     }
 }
 
