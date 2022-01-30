@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "720796dc-35e5-4b2e-8b2c-247c9767835e": {
+      "ProjectGuid": "720796dc-35e5-4b2e-8b2c-247c9767835e",
+      "DisplayName": "WinForms",
+      "ColorIndex": 0
+    },
+    "ba14eb8d-5459-4f2a-8998-e05e8e2b0ffa": {
+      "ProjectGuid": "ba14eb8d-5459-4f2a-8998-e05e8e2b0ffa",
+      "DisplayName": "WebApi",
+      "ColorIndex": 1
+    }
+  },
+  "NextColorIndex": 2
+}

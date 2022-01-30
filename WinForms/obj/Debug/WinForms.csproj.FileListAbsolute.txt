@@ -11,3 +11,4 @@ C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.pdb
 C:\Csharp\Concurrencia\WinForms\bin\Debug\Newtonsoft.Json.dll
 C:\Csharp\Concurrencia\WinForms\bin\Debug\Newtonsoft.Json.xml
 C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.CopyComplete
+C:\Csharp\Concurrencia\WinForms\obj\Debug\WinForms.csproj.SuggestedBindingRedirects.cache
